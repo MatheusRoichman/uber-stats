@@ -8,18 +8,22 @@ import { RootLayout } from './view/layout';
 import { CostReport } from './view/pages/cost-report';
 import { RideHistory } from './view/pages/ride-history';
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route element={<RootLayout />} >
-          <Route path="/" element={<Home />} />
+const root = document.getElementById('root')
 
-          <Route path="/cost-report" element={<CostReport />} />
+if (root) {
+  createRoot(root).render(
+    <StrictMode>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<RootLayout />} >
+            <Route path="/" element={<Home />} />
 
-          <Route path="/ride-history" element={<RideHistory />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  </StrictMode>,
-)
+            <Route path="/cost-report" element={<CostReport />} />
+
+            <Route path="/ride-history" element={<RideHistory />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </StrictMode>,
+  )
+}

@@ -3,8 +3,8 @@ import { LinkCard } from "./components/link-card";
 export function Home() {
   return (
     <>
-      <section className="bg-foreground text-background min-h-80 xl:p-48 lg:p-32 md:p-24 p-8">
-        <div className="flex flex-col justify-center max-w-5xl mx-auto">
+      <section className="bg-black text-white min-h-80 p-8">
+        <div className="flex flex-col max-w-5xl mx-auto mt-12">
           <h1 className="font-bold text-7xl font-title">Uber Stats</h1>
           <p className="text-lg mt-4">All your Uber information, in one place.</p>
         </div>
