@@ -1,7 +1,9 @@
-import { useRef } from 'react';
+import { Fragment, useMemo, useRef } from 'react';
 import { Info, Loader2, Upload } from 'lucide-react';
 
 import { formatFareAmount } from '@/app/utils/format-fare-amount';
+import { groupRidesByMonthAndYear } from '@/app/utils/group-rides-by-month-and-year';
+import { formatMonthAndYear } from '@/app/utils/format-month-and-year';
 
 import { useUploadRides } from '@/view/hooks/use-upload-rides';
 
@@ -13,10 +15,42 @@ export function CostReport() {
 
   const { rides, isLoading, handleFileUpload } = useUploadRides();
 
-  const totalSpending =
-    rides?.reduce((total, ride) => {
-      return total + Number(ride.fare_amount);
-    }, 0) || 0;
+  const totalSpending = useMemo(
+    () =>
+      rides?.reduce((total, ride) => {
+        return total + Number(ride.fare_amount);
+      }, 0) || 0,
+    [rides],
+  );
+
+  const totalSpendingOnCancellationTaxes = useMemo(
+    () =>
+      rides
+        ?.filter((ride) => ride.status !== 'completed' && ride.fare_amount > 0)
+        .reduce((total, ride) => {
+          return total + Number(ride.fare_amount);
+        }, 0) || 0,
+    [rides],
+  );
+
+  const totalSpendingByMonth = useMemo(() => {
+    if (!rides) return {};
+
+    const groupedRides = groupRidesByMonthAndYear(rides);
+
+    return Object.entries(groupedRides).reduce(
+      (acc, [monthAndYear, rides]) => {
+        const totalSpending = rides.reduce((total, ride) => {
+          return total + Number(ride.fare_amount);
+        }, 0);
+
+        acc[monthAndYear] = totalSpending;
+
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+  }, [rides]);
 
   return (
     <section className="p-8">
@@ -49,10 +83,60 @@ export function CostReport() {
           )}
 
           {rides && rides.length > 0 && (
-            <h2>
-              Total spent:{' '}
-              {formatFareAmount(totalSpending, rides[0].fare_currency)}
-            </h2>
+            <>
+              <div className="flex items-center gap-8">
+                <div className="flex flex-col gap-2 p-6 border rounded-md flex-1">
+                  <h2 className="font-bold text-2xl font-title">
+                    Total Spending
+                  </h2>
+                  <p className="text-xl">
+                    {formatFareAmount(totalSpending, rides[0].fare_currency)}
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-2 p-6 border rounded-md flex-1">
+                  <h2 className="font-bold text-2xl font-title">
+                    Total Cancellation Taxes
+                  </h2>
+                  <p className="text-xl">
+                    {formatFareAmount(
+                      totalSpendingOnCancellationTaxes,
+                      rides[0].fare_currency,
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <h2 className="font-bold text-2xl font-title">
+                  Total by Month
+                </h2>
+
+                <ul className="mt-4 space-y-4">
+                  {Object.entries(totalSpendingByMonth).map(
+                    ([monthAndYear, totalSpending], i, arr) => {
+                      return (
+                        <Fragment key={monthAndYear}>
+                          <li className="flex items-center justify-between">
+                            <span>{formatMonthAndYear(monthAndYear)}</span>
+                            <span>
+                              {formatFareAmount(
+                                totalSpending,
+                                rides[0].fare_currency,
+                              )}
+                            </span>
+                          </li>
+
+                          {i !== arr.length - 1 && (
+                            <hr className="border-gray-300" />
+                          )}
+                        </Fragment>
+                      );
+                    },
+                  )}
+                </ul>
+              </div>
+            </>
           )}
         </div>
       </div>
