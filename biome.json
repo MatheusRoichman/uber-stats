@@ -36,6 +36,11 @@
       }
     }
   },
+	"json": {
+		"parser": {
+			"allowComments": true
+		}
+	},
   "overrides": [
     {
       "include": ["packages/ui", "packages/editor", "apps/**"],

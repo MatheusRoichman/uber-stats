@@ -1,5 +1,4 @@
 import type { Ride } from "@/app/entities/ride";
-import { Dialog, DialogContent, DialogTrigger } from "@/view/components/dialog";
 
 interface RideCardProps {
 	ride: Ride;
