@@ -1,7 +1,10 @@
-import type { Ride } from "@/app/entities/ride";
-import { parse } from "papaparse";
-import { getAddressFromCoords } from "../address/get-address-from-coords";
 import type { QueryClient } from "@tanstack/react-query";
+
+import { parse } from "papaparse";
+
+import type { Ride } from "@/app/entities/ride";
+
+import { getAddressFromCoords } from "../address/get-address-from-coords";
 
 interface ListRidesParams {
 	csvContent: string;
