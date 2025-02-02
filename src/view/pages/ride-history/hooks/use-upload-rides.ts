@@ -7,15 +7,22 @@ import { listRides } from '@/app/services/rides/list-rides';
 
 import { toast } from '@/view/hooks/use-toast';
 
+interface RidesState {
+  rides: Ride[] | null;
+  isLoading: boolean;
+}
+
 export function useUploadRides() {
-  const [rides, setRides] = useState<Ride[] | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [ridesState, setRidesState] = useState<RidesState>({
+    rides: null,
+    isLoading: false,
+  });
 
   const queryClient = useQueryClient();
 
   const handleFileUpload: ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
-      setIsLoading(true);
+      setRidesState(prev => ({ ...prev, isLoading: true }));
 
       const file = e.target.files?.[0];
 
@@ -25,7 +32,7 @@ export function useUploadRides() {
           const content = e.target?.result;
 
           if (!content || typeof content !== 'string') {
-            setIsLoading(false);
+            setRidesState(prev => ({ ...prev, isLoading: false }));
 
             return;
           }
@@ -36,7 +43,7 @@ export function useUploadRides() {
               queryClient,
             });
 
-            setRides(rides);
+            setRidesState(prev => ({ ...prev, rides, isLoading: false }));
           } catch (error) {
             if (error instanceof Error) {
               toast({
@@ -50,9 +57,7 @@ export function useUploadRides() {
               });
             }
 
-            setRides(null);
-          } finally {
-            setIsLoading(false);
+            setRidesState(prev => ({ ...prev, rides: null, isLoading: false }));
           }
         };
 
@@ -63,8 +68,8 @@ export function useUploadRides() {
   );
 
   return {
-    rides,
-    isLoading,
+    rides: ridesState.rides,
+    isLoading: ridesState.isLoading,
     handleFileUpload,
   };
 }
