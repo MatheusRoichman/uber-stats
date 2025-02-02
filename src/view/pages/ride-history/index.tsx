@@ -1,10 +1,11 @@
 import { useRef } from 'react';
-import { Loader2, Upload } from 'lucide-react';
+import { Info, Loader2, Upload } from 'lucide-react';
 
 import { Button } from '@/view/components/ui/button';
 
 import { RidesList } from './components/rides-list';
 import { useUploadRides } from './hooks/use-upload-rides';
+import { DataRetrievalInstructionsTooltip } from '@/view/components/data-retrieval-instructions-tooltip';
 
 export function RideHistory() {
   const uploadInputRef = useRef<HTMLInputElement>(null);
@@ -27,11 +28,17 @@ export function RideHistory() {
                 onChange={handleFileUpload}
               />
 
-              <Button onClick={() => uploadInputRef.current?.click()}>
-                {!isLoading && <Upload className="size-4" />}
-                {isLoading && <Loader2 className="animate-spin size-4" />}
-                <span className="ml-2 font-medium">Upload CSV</span>
-              </Button>
+              <div className="flex items-center gap-4">
+                <Button onClick={() => uploadInputRef.current?.click()}>
+                  {!isLoading && <Upload className="size-4" />}
+                  {isLoading && <Loader2 className="animate-spin size-4" />}
+                  <span className="ml-2 font-medium">Upload CSV</span>
+                </Button>
+
+                <DataRetrievalInstructionsTooltip>
+                  <Info className="size-5 text-blue-700 cursor-pointer" />
+                </DataRetrievalInstructionsTooltip>
+              </div>
             </>
           )}
 
