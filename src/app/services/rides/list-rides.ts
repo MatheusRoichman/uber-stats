@@ -27,10 +27,10 @@ export async function listRides({ csvContent, queryClient }: ListRidesParams) {
       (ride) => !ride.begintrip_address,
     );
 
-    const addresses = await Promise.all(
-      ridesWithoutBeginTripAddress.map((ride) => {
-        return queryClient.fetchQuery({
-          queryKey: ['address', ride.begintrip_lat, ride.begintrip_lng],
+    const addressPromises = ridesWithoutBeginTripAddress.map(async (ride) => {
+      try {
+        return await queryClient.fetchQuery({
+          queryKey: ['get-address', ride.begintrip_lat, ride.begintrip_lng],
           queryFn: () =>
             getAddressFromCoords({
               lat: ride.begintrip_lat,
@@ -38,8 +38,12 @@ export async function listRides({ csvContent, queryClient }: ListRidesParams) {
             }),
           staleTime: 1000 * 60 * 60 * 24 * 14, // 2 weeks
         });
-      }),
-    );
+      } catch {
+        return 'Unknown address';
+      }
+    });
+
+    const addresses = await Promise.all(addressPromises);
 
     for (let i = 0; i < ridesWithoutBeginTripAddress.length; i++) {
       ridesWithoutBeginTripAddress[i].begintrip_address = addresses[i];
@@ -47,6 +51,8 @@ export async function listRides({ csvContent, queryClient }: ListRidesParams) {
 
     return parseResult.data;
   } catch {
-    throw new Error("Failed to read the rides from the CSV file. Please try again.");
+    throw new Error(
+      'Failed to read the rides from the CSV file. Please try again.',
+    );
   }
 }
