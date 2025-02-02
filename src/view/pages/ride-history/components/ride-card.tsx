@@ -1,15 +1,10 @@
 import type { Ride } from '@/app/entities/ride';
 
+import { formatFareAmount } from '@/app/utils/format-fare-amount';
+
 interface RideCardProps {
   ride: Ride;
 }
-
-const currencyCodeMapper: Record<string, string> = {
-  'Brazilian Real': 'BRL',
-  'US Dollar': 'USD',
-  'Canadian Dollar': 'CAD',
-  Euro: 'EUR',
-};
 
 const statusMapper: Record<string, string> = {
   rider_canceled: 'Rider canceled',
@@ -18,14 +13,9 @@ const statusMapper: Record<string, string> = {
 };
 
 export function RideCard({ ride }: RideCardProps) {
-  const formattedCurrency = currencyCodeMapper[ride.fare_currency]
-    ? ride.fare_amount.toLocaleString('en-US', {
-        style: 'currency',
-        currency: currencyCodeMapper[ride.fare_currency],
-      })
-    : `${ride.fare_amount} - ${ride.fare_currency}`;
+  const formattedFareAmount = formatFareAmount(ride.fare_amount, ride.fare_currency);
 
-  const displayedTime = ride.begin_trip_time
+  const displayedStartTime = ride.begin_trip_time
     ? ride.begin_trip_time.toLocaleString()
     : `Requested at ${ride.request_time.toLocaleString()}`;
 
@@ -35,13 +25,13 @@ export function RideCard({ ride }: RideCardProps) {
         {ride.begintrip_address || 'Unknown address'}
       </p>
 
-      <p className="mt-auto">{displayedTime}</p>
+      <p className="mt-auto">{displayedStartTime}</p>
       <p className="first-letter:capitalize">
         {ride.product_type} · {statusMapper[ride.status] || ride.status}
         {ride.distance > 0 && ` · ${ride.distance} km`}
       </p>
 
-      <p className="font-semibold text-lg">{formattedCurrency}</p>
+      <p className="font-semibold text-lg">{formattedFareAmount}</p>
     </li>
   );
 }

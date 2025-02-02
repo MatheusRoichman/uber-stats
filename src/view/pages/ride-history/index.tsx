@@ -3,9 +3,11 @@ import { Info, Loader2, Upload } from 'lucide-react';
 
 import { Button } from '@/view/components/ui/button';
 
-import { RidesList } from './components/rides-list';
-import { useUploadRides } from './hooks/use-upload-rides';
 import { DataRetrievalInstructionsTooltip } from '@/view/components/data-retrieval-instructions-tooltip';
+
+import { useUploadRides } from '../../hooks/use-upload-rides';
+
+import { RidesList } from './components/rides-list';
 
 export function RideHistory() {
   const uploadInputRef = useRef<HTMLInputElement>(null);
