@@ -9,6 +9,7 @@ import { listRides } from '@/app/services/rides/list-rides';
 import { Button } from '@/view/components/button';
 
 import { RidesList } from './components/rides-list';
+import { toast } from '@/view/hooks/use-toast';
 
 export function RideHistory() {
   const uploadInputRef = useRef<HTMLInputElement>(null);
@@ -43,7 +44,17 @@ export function RideHistory() {
 
             setRides(rides);
           } catch (error) {
-            console.error(error);
+            if (error instanceof Error) {
+              toast({
+                variant: 'destructive',
+                title: error.message,
+              })
+            } else {
+              toast({
+                variant: 'destructive',
+                title: 'An unexpected error occurred. Please try again.',
+              })
+            }
 
             setRides(null);
           } finally {
