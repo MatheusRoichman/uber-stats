@@ -1,39 +1,39 @@
-import { useMemo } from "react";
+import { useMemo } from 'react';
 
-import type { Ride } from "@/app/entities/ride";
+import type { Ride } from '@/app/entities/ride';
 
-import { groupRidesByMonthAndYear } from "../utils/group-rides-by-month-and-year";
-import { formatMonthAndYear } from "../utils/format-month-and-year";
+import { groupRidesByMonthAndYear } from '../utils/group-rides-by-month-and-year';
+import { formatMonthAndYear } from '../utils/format-month-and-year';
 
-import { RideCard } from "./ride-card";
+import { RideCard } from './ride-card';
 
 interface RidesListProps {
-	rides: Ride[];
+  rides: Ride[];
 }
 
 export function RidesList({ rides }: RidesListProps) {
-	const ridesByMonthAndYear = useMemo(
-		() => groupRidesByMonthAndYear(rides, { sort: "desc" }),
-		[rides],
-	);
+  const ridesByMonthAndYear = useMemo(
+    () => groupRidesByMonthAndYear(rides),
+    [rides],
+  );
 
-	return (
-		<div className="space-y-4">
-			{Object.entries(ridesByMonthAndYear).map(([monthAndYear, rides]) => (
-				<div key={monthAndYear}>
-					<h2 className="font-bold text-2xl font-title">
-						{formatMonthAndYear(monthAndYear)}
-					</h2>
+  return (
+    <div className="space-y-4">
+      {Object.entries(ridesByMonthAndYear).map(([monthAndYear, rides]) => (
+        <div key={monthAndYear}>
+          <h2 className="font-bold text-2xl font-title">
+            {formatMonthAndYear(monthAndYear)}
+          </h2>
 
-					<ul className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-						{rides.map((ride, index) => {
-							const idx = index;
+          <ul className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {rides.slice(0, 5).map((ride, index) => {
+              const idx = index;
 
-							return <RideCard key={`RIDE_${idx}`} ride={ride} />;
-						})}
-					</ul>
-				</div>
-			))}
-		</div>
-	);
+              return <RideCard key={`RIDE_${idx}`} ride={ride} />;
+            })}
+          </ul>
+        </div>
+      ))}
+    </div>
+  );
 }

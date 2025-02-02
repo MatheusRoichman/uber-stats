@@ -1,67 +1,57 @@
-import type { Ride } from "@/app/entities/ride";
+import type { Ride } from '@/app/entities/ride';
 
-interface GroupRidesByMonthOptions {
-	sort?: "asc" | "desc";
+interface GroupRidesByMonthAndYearOptions {
+  sort?: 'asc' | 'desc';
 }
 
 export function groupRidesByMonthAndYear(
-	rides: Ride[],
-	options: GroupRidesByMonthOptions = {},
+  rides: Ride[],
+  options: GroupRidesByMonthAndYearOptions = {},
 ): Record<string, Ride[]> {
-	const ridesByMonth = rides.reduce(
-		(acc, ride) => {
-			const month = new Date(ride.request_time).toLocaleDateString("en-US", {
-				month: "numeric",
-				year: "numeric",
-			});
+  const ridesByMonth: Record<string, Ride[]> = {};
+  const sort = options.sort || 'desc';
 
-			if (!acc[month]) {
-				acc[month] = [];
-			}
+  for (const ride of rides) {
+    const date = new Date(ride.request_time);
+    const monthYearKey = `${String(date.getMonth() + 1)}/${date.getFullYear()}`;
 
-			acc[month].push(ride);
+    if (!ridesByMonth[monthYearKey]) {
+      ridesByMonth[monthYearKey] = [];
+    }
+    ridesByMonth[monthYearKey].push(ride);
+  }
 
-			return acc;
-		},
-		{} as Record<string, Ride[]>,
-	);
+  for (const key in ridesByMonth) {
+    ridesByMonth[key].sort((a, b) => {
+      const dateA = new Date(a.request_time);
+      const dateB = new Date(b.request_time);
 
-	if (!options.sort) return ridesByMonth;
+      return sort === 'asc'
+        ? dateA.getTime() - dateB.getTime()
+        : dateB.getTime() - dateA.getTime();
+    });
+  }
 
-	const grouped = Object.entries(ridesByMonth).reduce(
-		(acc, [month, rides]) => {
-			acc[month] = rides.sort((a, b) => {
-				const dateA = new Date(a.request_time);
-				const dateB = new Date(b.request_time);
+  return Object.keys(ridesByMonth)
+    .sort((a, b) => {
+      const [monthA, yearA] = a.split('/');
+      const [monthB, yearB] = b.split('/');
 
-				if (options.sort === "asc") {
-					return dateA.getTime() - dateB.getTime();
-				}
+      if (yearA === yearB) {
+        return sort === 'asc'
+          ? Number(monthA) - Number(monthB)
+          : Number(monthB) - Number(monthA);
+      }
 
-				return dateB.getTime() - dateA.getTime();
-			});
-
-			return acc;
-		},
-		{} as Record<string, Ride[]>,
-	);
-
-	return Object.keys(grouped)
-		.sort((a, b) => {
-			const [month, year] = a.split("/");
-			const [month2, year2] = b.split("/");
-
-			const dateA = new Date(`1/${month}/${year}`);
-			const dateB = new Date(`1/${month2}/${year2}`);
-
-			return dateB.getTime() - dateA.getTime();
-		})
-		.reduce(
-			(acc, key) => {
-				acc[key] = grouped[key];
-
-				return acc;
-			},
-			{} as Record<string, Ride[]>,
-		);
+      return sort === 'asc'
+        ? Number(yearA) - Number(yearB)
+        : Number(yearB) - Number(yearA);
+    })
+    .reduce(
+      (accumulator, key) => {
+        accumulator[key] = ridesByMonth[key];
+        return accumulator;
+      },
+      {} as Record<string, Ride[]>,
+    );
 }
