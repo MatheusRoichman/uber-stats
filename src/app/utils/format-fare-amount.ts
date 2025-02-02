@@ -7,7 +7,7 @@ const currencyCodeMapper: Record<string, string> = {
 
 export function formatFareAmount(amount: number, currency: string) {
   return currencyCodeMapper[currency]
-    ? amount.toLocaleString('en-US', {
+    ? amount.toLocaleString(undefined, {
         style: 'currency',
         currency: currencyCodeMapper[currency],
       })
