@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 
 import type { Ride } from '@/app/entities/ride';
 
-import { groupRidesByMonthAndYear } from '../utils/group-rides-by-month-and-year';
-import { formatMonthAndYear } from '../utils/format-month-and-year';
+import { groupRidesByMonthAndYear } from '@/app/utils/group-rides-by-month-and-year';
+import { formatMonthAndYear } from '@/app/utils/format-month-and-year';
 
 import { RideCard } from './ride-card';
 
