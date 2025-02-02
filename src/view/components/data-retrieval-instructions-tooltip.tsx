@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 interface DataRetrievalInstructionsTooltipProps {
@@ -7,11 +9,19 @@ interface DataRetrievalInstructionsTooltipProps {
 export function DataRetrievalInstructionsTooltip({
   children,
 }: DataRetrievalInstructionsTooltipProps) {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>{children}</TooltipTrigger>
+  const [open, setOpen] = useState(false);
 
-      <TooltipContent side="bottom" className="max-w-[100vw]">
+  return (
+    <Tooltip open={open} onOpenChange={setOpen}>
+      <TooltipTrigger asChild onClick={() => setOpen((prev) => !prev)}>
+        {children}
+      </TooltipTrigger>
+
+      <TooltipContent
+        onPointerDownOutside={() => setOpen(false)}
+        side="bottom"
+        className="max-w-[100vw]"
+      >
         <p>
           You need to request a copy of all your data via the Uber website or
           mobile app.
