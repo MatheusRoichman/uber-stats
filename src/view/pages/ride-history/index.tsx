@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { Loader2, Upload } from 'lucide-react';
 
-import { Button } from '@/view/components/button';
+import { Button } from '@/view/components/ui/button';
 
 import { RidesList } from './components/rides-list';
 import { useUploadRides } from './hooks/use-upload-rides';
