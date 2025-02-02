@@ -1,5 +1,6 @@
-import { LogoWhite } from "@/assets/illustrations/logo-white";
 import { Link } from "react-router";
+
+import { LogoWhite } from "@/assets/illustrations/logo-white";
 
 const links = [
 	{ href: "/", label: "Home" },

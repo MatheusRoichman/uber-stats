@@ -1,8 +1,11 @@
-import type { Ride } from "@/app/entities/ride";
 import { useMemo } from "react";
+
+import type { Ride } from "@/app/entities/ride";
+
 import { groupRidesByMonthAndYear } from "../utils/group-rides-by-month-and-year";
-import { RideCard } from "./ride-card";
 import { formatMonthAndYear } from "../utils/format-month-and-year";
+
+import { RideCard } from "./ride-card";
 
 interface RidesListProps {
 	rides: Ride[];
