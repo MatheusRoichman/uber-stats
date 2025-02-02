@@ -84,7 +84,7 @@ export function CostReport() {
 
           {rides && rides.length > 0 && (
             <>
-              <div className="flex items-center gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="flex flex-col gap-2 p-6 border rounded-md flex-1">
                   <h2 className="font-bold text-2xl font-title">
                     Total Spending
