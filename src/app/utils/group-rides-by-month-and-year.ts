@@ -34,18 +34,14 @@ export function groupRidesByMonthAndYear(
 
   return Object.keys(ridesByMonth)
     .sort((a, b) => {
-      const [monthA, yearA] = a.split('/');
-      const [monthB, yearB] = b.split('/');
+      const [monthA, yearA] = a.split('/').map((value) => Number(value));
+      const [monthB, yearB] = b.split('/').map((value) => Number(value));
 
       if (yearA === yearB) {
-        return sort === 'asc'
-          ? Number(monthA) - Number(monthB)
-          : Number(monthB) - Number(monthA);
+        return sort === 'asc' ? monthA - monthB : monthB - monthA;
       }
 
-      return sort === 'asc'
-        ? Number(yearA) - Number(yearB)
-        : Number(yearB) - Number(yearA);
+      return sort === 'asc' ? yearA - yearB : yearB - yearA;
     })
     .reduce(
       (accumulator, key) => {
