@@ -2,55 +2,24 @@ import { Fragment, useMemo, useRef } from 'react';
 import { Info, Loader2, Upload } from 'lucide-react';
 
 import { formatFareAmount } from '@/app/utils/format-fare-amount';
-import { groupRidesByMonthAndYear } from '@/app/utils/group-rides-by-month-and-year';
 import { formatMonthAndYear } from '@/app/utils/format-month-and-year';
 
 import { useUploadRides } from '@/view/hooks/use-upload-rides';
 
 import { Button } from '@/view/components/ui/button';
+
 import { DataRetrievalInstructionsTooltip } from '@/view/components/data-retrieval-instructions-tooltip';
+
+import { getSpendingStats } from './utils/get-spending-stats';
+
+import { StatsCard } from './components/stats-card';
 
 export function CostReport() {
   const uploadInputRef = useRef<HTMLInputElement>(null);
 
   const { rides, isLoading, handleFileUpload } = useUploadRides();
 
-  const totalSpending = useMemo(
-    () =>
-      rides?.reduce((total, ride) => {
-        return total + Number(ride.fare_amount);
-      }, 0) || 0,
-    [rides],
-  );
-
-  const totalSpendingOnCancellationTaxes = useMemo(
-    () =>
-      rides
-        ?.filter((ride) => ride.status !== 'completed' && ride.fare_amount > 0)
-        .reduce((total, ride) => {
-          return total + Number(ride.fare_amount);
-        }, 0) || 0,
-    [rides],
-  );
-
-  const totalSpendingByMonth = useMemo(() => {
-    if (!rides) return {};
-
-    const groupedRides = groupRidesByMonthAndYear(rides);
-
-    return Object.entries(groupedRides).reduce(
-      (acc, [monthAndYear, rides]) => {
-        const totalSpending = rides.reduce((total, ride) => {
-          return total + Number(ride.fare_amount);
-        }, 0);
-
-        acc[monthAndYear] = totalSpending;
-
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
-  }, [rides]);
+  const spendingStats = useMemo(() => getSpendingStats(rides), [rides]);
 
   return (
     <section className="p-8">
@@ -85,26 +54,34 @@ export function CostReport() {
           {rides && rides.length > 0 && (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="flex flex-col gap-2 p-6 border rounded-md flex-1">
-                  <h2 className="font-bold text-2xl font-title">
-                    Total Spending
-                  </h2>
-                  <p className="text-xl">
-                    {formatFareAmount(totalSpending, rides[0].fare_currency)}
-                  </p>
-                </div>
+                <StatsCard
+                  title="Total Spending"
+                  value={formatFareAmount(
+                    spendingStats.total,
+                    rides[0].fare_currency,
+                  )}
+                />
 
-                <div className="flex flex-col gap-2 p-6 border rounded-md flex-1">
-                  <h2 className="font-bold text-2xl font-title">
-                    Total Cancellation Taxes
-                  </h2>
-                  <p className="text-xl">
-                    {formatFareAmount(
-                      totalSpendingOnCancellationTaxes,
-                      rides[0].fare_currency,
-                    )}
-                  </p>
-                </div>
+                <StatsCard
+                  title="Total Cancellation Fees"
+                  value={formatFareAmount(
+                    spendingStats.cancellationFees,
+                    rides[0].fare_currency,
+                  )}
+                />
+
+                <StatsCard
+                  title="Monthly Average"
+                  value={formatFareAmount(
+                    spendingStats.monthlyAverage,
+                    rides[0].fare_currency,
+                  )}
+                />
+
+                <StatsCard
+                  title="Month With Most Spending"
+                  value={spendingStats.monthWithMostSpending}
+                />
               </div>
 
               <div className="mt-8">
@@ -113,7 +90,7 @@ export function CostReport() {
                 </h2>
 
                 <ul className="mt-4 space-y-4">
-                  {Object.entries(totalSpendingByMonth).map(
+                  {Object.entries(spendingStats.spendingByMonth).map(
                     ([monthAndYear, totalSpending], i, arr) => {
                       return (
                         <Fragment key={monthAndYear}>
