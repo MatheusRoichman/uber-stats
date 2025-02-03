@@ -3,6 +3,9 @@ const currencyCodeMapper: Record<string, string> = {
   'US Dollar': 'USD',
   'Canadian Dollar': 'CAD',
   Euro: 'EUR',
+  'Swiss Francs': 'CHF',
+  'Moroccan Dirham': 'MAD',
+  'Argentine Peso': 'ARS',
 };
 
 export function formatFareAmount(amount: number, currency: string) {
